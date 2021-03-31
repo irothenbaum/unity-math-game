@@ -5,6 +5,8 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     public static GameController Instance { get; private set; }
+    public GameObject equationPrefab;
+    private bool canCreate = true;
 
     void Awake()
     {
@@ -15,10 +17,12 @@ public class GameController : MonoBehaviour
         }
 
         Instance = this;
+        CreateNewEquation();
     }
     void Update()
     {
-        // global game update logic goes here
+        // GameObject existing = GameObject.FindWithTag("Equation");
+        canCreate = true;
     }
 
     // ------------------------------------------------------------------------------------------------------
@@ -31,8 +35,44 @@ public class GameController : MonoBehaviour
         return userInput.GetInputValue();
     }
 
+    public void CheckAnswerToEquation(EquationController equation)
+    {
+        float userAnswer = GetUserAnswer();
+        float correctAnswer = equation.GetAnswer();
+        if (userAnswer == correctAnswer)
+        {
+            HandleCorrect();
+        }
+        else
+        {
+            HandleIncorrect();
+        }
+
+        Destroy(equation.gameObject);
+
+        if (canCreate)
+        {
+            CreateNewEquation();
+        }
+    }
+
     // ------------------------------------------------------------------------------------------------------
     // PRIVATE
 
+    private void HandleCorrect()
+    {
+        Debug.Log("Correct!!");
+    }
 
+    private void HandleIncorrect()
+    {
+        Debug.Log("Incorrect :(");
+    }
+
+    private void CreateNewEquation()
+    {
+        Debug.Log("CREATING...");
+        Instantiate(equationPrefab, transform.position, Quaternion.identity);
+        canCreate = false;
+    }
 }

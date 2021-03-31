@@ -68,6 +68,11 @@ public class InputController : MonoBehaviour
 
     private string BufferToString()
     {
+        if (buffer.Count == 0)
+        {
+            return "0";
+        }
+
         string joined = "";
 
         for (int i = 0; i < buffer.Count; i++)

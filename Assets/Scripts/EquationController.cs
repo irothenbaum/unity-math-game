@@ -12,14 +12,31 @@ public class EquationController : MonoBehaviour
     private float constant2;
     private Text display;
 
-    private float padding = 20.0f;
+    private float padding = 40.0f;
 
     // Start is called before the first frame update
     void Start()
     {
+        InitSolution();
+    }
+
+    // ------------------------------------------------------------------------------------------------------
+    // PUBLIC
+
+    public float GetAnswer()
+    {
+        return answer;
+    }
+
+    // ------------------------------------------------------------------------------------------------------
+    // PRIVATE
+
+    private void InitSolution()
+    {
+        Debug.Log("INIT!");
         // Bind our click handler
-        Button btn = gameObject.GetComponent<Button>();
-        btn.onClick.AddListener(CheckIfCorrect);
+        Button btn = gameObject.GetComponentInChildren<Button>();
+        btn.onClick.AddListener(HandleAnswer);
 
         // Pick an answer
         answer = Random.Range(0.0f, GameSettings.Instance.MaximumAnswerValue);
@@ -28,49 +45,19 @@ public class EquationController : MonoBehaviour
         // Determine what the constants should be
         constant1 = Random.Range(-answer, answer);
         constant1 = RoundIfNeeded(constant1);
-        constant2 = answer - constant1;
+        constant2 = RoundIfNeeded(answer - constant1);
+        answer = constant1 + constant2;
 
         // Update our display to show the equation
         Debug.Log("Answer is " + answer.ToString());
-        display = transform.GetChild(0).gameObject.GetComponentInChildren<Text>();
+        display = btn.transform.GetChild(0).gameObject.GetComponentInChildren<Text>();
         display.text = constant1.ToString() + " + " + constant2.ToString();
 
         // Set our box width accordingly
         float width = display.preferredWidth + padding;
-        float height = display.preferredHeight + (padding / 2);
-        GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-        GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-    }
-
-    // ------------------------------------------------------------------------------------------------------
-    // PUBLIC
-
-    public void CheckIfCorrect()
-    {
-        float userAnswer = GameController.Instance.GetUserAnswer();
-        if (userAnswer == answer)
-        {
-            HandleCorrect();
-        }
-        else
-        {
-            HandleIncorrect();
-        }
-    }
-
-    // ------------------------------------------------------------------------------------------------------
-    // PRIVATE
-
-    private void HandleCorrect()
-    {
-        Debug.Log("Correct!!");
-        Destroy(gameObject);
-    }
-
-    private void HandleIncorrect()
-    {
-        Debug.Log("Incorrect :(");
-        Destroy(gameObject);
+        float height = display.preferredHeight + padding;
+        btn.gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+        btn.gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
     }
 
     private float RoundIfNeeded(float val)
@@ -78,6 +65,11 @@ public class EquationController : MonoBehaviour
         // This will round according to the decimal base
         float decimalBase = Mathf.Round(Mathf.Pow(10.0f, (float)GameSettings.Instance.MaximumNumberOfDecimals));
         return  Mathf.Round(val * decimalBase) / decimalBase;
+    }
+
+    private void HandleAnswer()
+    {
+        GameController.Instance.CheckAnswerToEquation(this);
     }
 }
 
