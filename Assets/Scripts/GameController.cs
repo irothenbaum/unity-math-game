@@ -22,7 +22,6 @@ public class GameController : MonoBehaviour
     void Update()
     {
         // GameObject existing = GameObject.FindWithTag("Equation");
-        canCreate = true;
     }
 
     // ------------------------------------------------------------------------------------------------------
@@ -30,9 +29,7 @@ public class GameController : MonoBehaviour
 
     public float GetUserAnswer()
     {
-        GameObject userAnswer = GameObject.FindGameObjectWithTag("UserAnswer");
-        InputController userInput = userAnswer.GetComponent<InputController>();
-        return userInput.GetInputValue();
+        return GetUserInputController().GetInputValue();
     }
 
     public void CheckAnswerToEquation(EquationController equation)
@@ -41,11 +38,11 @@ public class GameController : MonoBehaviour
         float correctAnswer = equation.GetAnswer();
         if (userAnswer == correctAnswer)
         {
-            HandleCorrect();
+            HandleCorrect(userAnswer);
         }
         else
         {
-            HandleIncorrect();
+            HandleIncorrect(userAnswer, correctAnswer);
         }
 
         Destroy(equation.gameObject);
@@ -54,25 +51,31 @@ public class GameController : MonoBehaviour
         {
             CreateNewEquation();
         }
+
+        GetUserInputController().ClearAnswer();
     }
 
     // ------------------------------------------------------------------------------------------------------
     // PRIVATE
 
-    private void HandleCorrect()
+    private InputController GetUserInputController()
     {
-        Debug.Log("Correct!!");
+        GameObject userAnswer = GameObject.FindGameObjectWithTag("UserAnswer");
+        return userAnswer.GetComponent<InputController>();
     }
 
-    private void HandleIncorrect()
+    private void HandleCorrect(float answer)
     {
-        Debug.Log("Incorrect :(");
+        Debug.Log("Correct!! " + answer);
+    }
+
+    private void HandleIncorrect(float userAnswer, float correctAnswer)
+    {
+        Debug.Log("Incorrect :( " + correctAnswer);
     }
 
     private void CreateNewEquation()
     {
-        Debug.Log("CREATING...");
         Instantiate(equationPrefab, transform.position, Quaternion.identity);
-        canCreate = false;
     }
 }

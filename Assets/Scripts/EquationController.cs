@@ -33,7 +33,6 @@ public class EquationController : MonoBehaviour
 
     private void InitSolution()
     {
-        Debug.Log("INIT!");
         // Bind our click handler
         Button btn = gameObject.GetComponentInChildren<Button>();
         btn.onClick.AddListener(HandleAnswer);
@@ -49,15 +48,19 @@ public class EquationController : MonoBehaviour
         answer = constant1 + constant2;
 
         // Update our display to show the equation
-        Debug.Log("Answer is " + answer.ToString());
+        Debug.Log("Answer is: " + answer.ToString());
+
         display = btn.transform.GetChild(0).gameObject.GetComponentInChildren<Text>();
         display.text = constant1.ToString() + " + " + constant2.ToString();
 
         // Set our box width accordingly
-        float width = display.preferredWidth + padding;
-        float height = display.preferredHeight + padding;
-        btn.gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-        btn.gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+        float equationWidth = display.preferredWidth + padding;
+        float meshScale = equationWidth / 100.0f; // 100 is the default/starting ratio between mesh scale and UI width
+
+        RectTransform uiRect = btn.gameObject.GetComponent<RectTransform>();
+        uiRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, equationWidth);
+        uiRect.localScale = new Vector3(1 / meshScale, 2, 1);
+        gameObject.transform.localScale = new Vector3(meshScale, 0.5f, 1);
     }
 
     private float RoundIfNeeded(float val)

@@ -63,6 +63,12 @@ public class InputController : MonoBehaviour
         return float.Parse(BufferToString());
     }
 
+    public void ClearAnswer()
+    {
+        buffer.Clear();
+        UpdateDisplay();
+    }
+
     // ------------------------------------------------------------------------------------------------------
     // PRIVATE
 
