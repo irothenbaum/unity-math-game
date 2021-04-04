@@ -13,7 +13,7 @@ public class RotationController : MonoBehaviour
 
     private IEnumerator Rotate()
     {
-        float duration = 0.35f;
+        float duration = GameSettings.Instance.TransitionSpeed;
         float startRotation = transform.eulerAngles.x;
         float endRotation = startRotation + 360.0f;
         float t = 0.0f;

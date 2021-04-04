@@ -12,6 +12,7 @@ public class EquationController : MonoBehaviour
     private float constant1;
     private float constant2;
     private Text display;
+    private Color initialColor;
 
     private float padding = 40.0f;
 
@@ -26,7 +27,7 @@ public class EquationController : MonoBehaviour
         Button btn = gameObject.GetComponentInChildren<Button>();
         btn.onClick.AddListener(HandleAnswer);
 
-
+        initialColor = GetComponent<ColorController>().GetCurrentColor();
     }
 
     private void Update()
@@ -50,11 +51,19 @@ public class EquationController : MonoBehaviour
     {
         readyToSelectNewAnswer = true;
         GetComponent<RotationController>().StartRotating();
+        GetComponent<ColorController>().SetColors(new Color[] {
+            new Color(0, 255, 0),
+            initialColor
+        }, GameSettings.Instance.TransitionSpeed);
     }
 
     public void HandleIncorrect()
     {
         GetComponent<ShakeController>().StartShaking();
+        GetComponent<ColorController>().SetColors(new Color[] {
+            new Color(255, 0, 0),
+            initialColor
+        }, GameSettings.Instance.TransitionSpeed);
     }
 
     // ------------------------------------------------------------------------------------------------------
@@ -74,8 +83,13 @@ public class EquationController : MonoBehaviour
         answer = RoundIfNeeded(answer);
 
         // Determine what the constants should be
-        constant1 = Random.Range(-answer, answer);
-        constant1 = RoundIfNeeded(constant1);
+        do
+        {
+            constant1 = Random.Range(-answer, answer);
+            constant1 = RoundIfNeeded(constant1);
+            // we want the first constant to be interesting
+        } while (!IsConstantInteresting(constant1));
+        
         constant2 = RoundIfNeeded(answer - constant1);
         answer = constant1 + constant2;
 
@@ -115,6 +129,12 @@ public class EquationController : MonoBehaviour
     private void HandleAnswer()
     {
         GameController.Instance.CheckAnswerToEquation(this);
+    }
+
+    private bool IsConstantInteresting(float constant)
+    {
+        return constant1 != 0 
+            && constant1 != answer;
     }
 }
 

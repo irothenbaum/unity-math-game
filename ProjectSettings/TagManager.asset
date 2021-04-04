@@ -6,6 +6,7 @@ TagManager:
   tags:
   - UserAnswer
   - Equation
+  - Background
   layers:
   - Default
   - TransparentFX

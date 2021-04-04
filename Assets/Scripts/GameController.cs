@@ -6,6 +6,7 @@ public class GameController : MonoBehaviour
 {
     public static GameController Instance { get; private set; }
     public GameObject equationPrefab;
+    private Color bgColor;
 
     void Awake()
     {
@@ -17,6 +18,7 @@ public class GameController : MonoBehaviour
 
         Instance = this;
         CreateNewEquation();
+        GetBackgroundColorController().SetColor(RandomizeBackgroundColor());
     }
     void Update()
     {
@@ -56,18 +58,37 @@ public class GameController : MonoBehaviour
         return userAnswer.GetComponent<InputController>();
     }
 
+    private ColorController GetBackgroundColorController()
+    {
+        GameObject background = GameObject.FindGameObjectWithTag("Background");
+        return background.GetComponent<ColorController>();
+    }
+
     private void HandleCorrect(EquationController equation)
     {
         equation.HandleCorrect();
+        GetBackgroundColorController().SetColors(new Color[] {
+            GetBackgroundColorController().GetCurrentColor(),
+            RandomizeBackgroundColor()
+    }, 1f);
     }
 
     private void HandleIncorrect(EquationController equation)
     {
         equation.HandleIncorrect();
+        GetBackgroundColorController().SetColors(new Color[] {
+            new Color(255, 0, 0),
+            bgColor
+        }, GameSettings.Instance.TransitionSpeed);
     }
 
     private void CreateNewEquation()
     {
         Instantiate(equationPrefab, transform.position, Quaternion.identity);
+    }
+
+    private Color RandomizeBackgroundColor()
+    {
+        return GameSettings.Instance.BGColors[(int) Mathf.Round(Random.Range(0, GameSettings.Instance.BGColors.Length))];
     }
 }
