@@ -6,7 +6,6 @@ public class GameController : MonoBehaviour
 {
     public static GameController Instance { get; private set; }
     public GameObject equationPrefab;
-    private bool canCreate = true;
 
     void Awake()
     {
@@ -38,18 +37,11 @@ public class GameController : MonoBehaviour
         float correctAnswer = equation.GetAnswer();
         if (userAnswer == correctAnswer)
         {
-            HandleCorrect(userAnswer);
+            HandleCorrect(equation);
         }
         else
         {
-            HandleIncorrect(userAnswer, correctAnswer);
-        }
-
-        Destroy(equation.gameObject);
-
-        if (canCreate)
-        {
-            CreateNewEquation();
+            HandleIncorrect(equation);
         }
 
         GetUserInputController().ClearAnswer();
@@ -64,14 +56,14 @@ public class GameController : MonoBehaviour
         return userAnswer.GetComponent<InputController>();
     }
 
-    private void HandleCorrect(float answer)
+    private void HandleCorrect(EquationController equation)
     {
-        Debug.Log("Correct!! " + answer);
+        equation.HandleCorrect();
     }
 
-    private void HandleIncorrect(float userAnswer, float correctAnswer)
+    private void HandleIncorrect(EquationController equation)
     {
-        Debug.Log("Incorrect :( " + correctAnswer);
+        equation.HandleIncorrect();
     }
 
     private void CreateNewEquation()
