@@ -34,6 +34,7 @@ public class EquationController : MonoBehaviour
     {
         if (readyToSelectNewAnswer && IsFacingBackwards())
         {
+            Debug.Log("Is facing backwards, picking new answer");
             readyToSelectNewAnswer = false;
             InitSolution();
         }
@@ -52,7 +53,7 @@ public class EquationController : MonoBehaviour
         readyToSelectNewAnswer = true;
         GetComponent<RotationController>().StartRotating();
         GetComponent<ColorController>().SetColors(new Color[] {
-            new Color(0, 255, 0),
+            new Color(0, 1, 0),
             initialColor
         }, GameSettings.Instance.TransitionSpeed);
     }
@@ -61,7 +62,7 @@ public class EquationController : MonoBehaviour
     {
         GetComponent<ShakeController>().StartShaking();
         GetComponent<ColorController>().SetColors(new Color[] {
-            new Color(255, 0, 0),
+            new Color(1, 0, 0),
             initialColor
         }, GameSettings.Instance.TransitionSpeed);
     }
@@ -71,7 +72,7 @@ public class EquationController : MonoBehaviour
 
     private bool IsFacingBackwards()
     {
-        return transform.eulerAngles.x > 120 || transform.eulerAngles.x < 240;
+        return transform.rotation.x > 0.75;
     }
 
     private void InitSolution()

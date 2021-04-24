@@ -6,7 +6,6 @@ public class GameController : MonoBehaviour
 {
     public static GameController Instance { get; private set; }
     public GameObject equationPrefab;
-    private Color bgColor;
 
     void Awake()
     {
@@ -52,6 +51,11 @@ public class GameController : MonoBehaviour
     // ------------------------------------------------------------------------------------------------------
     // PRIVATE
 
+    private void AddPoints(float basePoints, float multiplier = 1f)
+    {
+
+    }
+
     private InputController GetUserInputController()
     {
         GameObject userAnswer = GameObject.FindGameObjectWithTag("UserAnswer");
@@ -70,15 +74,16 @@ public class GameController : MonoBehaviour
         GetBackgroundColorController().SetColors(new Color[] {
             GetBackgroundColorController().GetCurrentColor(),
             RandomizeBackgroundColor()
-    }, 1f);
+        }, GameSettings.Instance.TransitionSpeed);
+        AddPoints(Mathf.Abs(equation.GetAnswer()));
     }
 
     private void HandleIncorrect(EquationController equation)
     {
         equation.HandleIncorrect();
         GetBackgroundColorController().SetColors(new Color[] {
-            new Color(255, 0, 0),
-            bgColor
+            new Color(1, 0, 0),
+            GetBackgroundColorController().GetCurrentColor()
         }, GameSettings.Instance.TransitionSpeed);
     }
 
@@ -89,6 +94,6 @@ public class GameController : MonoBehaviour
 
     private Color RandomizeBackgroundColor()
     {
-        return GameSettings.Instance.BGColors[(int) Mathf.Round(Random.Range(0, GameSettings.Instance.BGColors.Length))];
+        return GameSettings.Instance.BGColors[(int) Mathf.Floor(Random.Range(0, GameSettings.Instance.BGColors.Length))];
     }
 }

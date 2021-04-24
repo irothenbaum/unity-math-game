@@ -23,17 +23,32 @@ public class ColorController : MonoBehaviour
 
     public IEnumerator AnimateThroughColors(Color[] colors, float duration)
     {
+        Debug.Log(colors);
+        Debug.Log(colors[0]);
+        Debug.Log(colors[1]);
+
         AssignColor(colors[0]);
         float t = 0f;
         float stepDuration = duration / colors.Length;
-        foreach(Color c in colors)
+        Debug.Log(stepDuration);
+        while (t < duration)
         {
-            Color indexColor = Color.Lerp(GetComponent<Renderer>().material.color, c, (t % stepDuration) / stepDuration);
-            AssignColor(indexColor);
-            t += Time.deltaTime;
+            float progress = t / duration;
+            float colorIndexFloat = progress * (colors.Length - 1);
+            int colorStartIndex = (int) Mathf.Floor(colorIndexFloat);
+            int colorStopIndex = colorStartIndex + 1;
 
-            yield return indexColor;
+            Color color1 = colors[colorStartIndex];
+            Color color2 = colors[colorStopIndex];
+
+            Color indexColor = Color.Lerp(color1, color2, colorIndexFloat - colorStartIndex);
+            AssignColor(indexColor);
+
+            t += Time.deltaTime;
+            yield return null;
         }
+
+        AssignColor(colors[colors.Length - 1]);
     }
 
     private void AssignColor(Color c)

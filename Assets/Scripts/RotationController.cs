@@ -24,5 +24,7 @@ public class RotationController : MonoBehaviour
             transform.eulerAngles = new Vector3(xRotation, 0, 0);
             yield return null;
         }
+
+        transform.eulerAngles = new Vector3(endRotation, 0, 0);
     }
 }
