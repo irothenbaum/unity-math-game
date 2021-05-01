@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class ColorController : MonoBehaviour
 {
+    private Color lastAssigned;
+
     public Color GetCurrentColor()
     {
-        return GetComponent<Renderer>().material.color;
+        return lastAssigned != null ? lastAssigned : GetComponent<Renderer>().material.color;
     }
 
     public void SetColor(Color c)
     {
-        AssignColor(c);
-        // SetColors(new Color[] { GetComponent<Renderer>().material.color, c }, 0.1f);
+        SetColors(new Color[] { GetCurrentColor(), c }, 0.1f);
     }
 
     public void SetColors(Color[] colors, float duration)
@@ -23,14 +24,9 @@ public class ColorController : MonoBehaviour
 
     public IEnumerator AnimateThroughColors(Color[] colors, float duration)
     {
-        Debug.Log(colors);
-        Debug.Log(colors[0]);
-        Debug.Log(colors[1]);
-
         AssignColor(colors[0]);
         float t = 0f;
         float stepDuration = duration / colors.Length;
-        Debug.Log(stepDuration);
         while (t < duration)
         {
             float progress = t / duration;
@@ -48,11 +44,15 @@ public class ColorController : MonoBehaviour
             yield return null;
         }
 
-        AssignColor(colors[colors.Length - 1]);
+        AssignColor(colors[colors.Length - 1], true);
     }
 
-    private void AssignColor(Color c)
+    private void AssignColor(Color c, bool assignAsCurrent = false)
     {
         GetComponent<Renderer>().material.color = c;
+        if (assignAsCurrent)
+        {
+            this.lastAssigned = c;
+        }
     }
 }

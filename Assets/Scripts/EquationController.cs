@@ -13,8 +13,10 @@ public class EquationController : MonoBehaviour
     private float constant2;
     private Text display;
     private Color initialColor;
-
+    private bool shouldDestroy;
     private float padding = 40.0f;
+
+    public GameObject fireworks;
 
     // Start is called before the first frame update
     void Start()
@@ -36,7 +38,14 @@ public class EquationController : MonoBehaviour
         {
             Debug.Log("Is facing backwards, picking new answer");
             readyToSelectNewAnswer = false;
-            InitSolution();
+
+            if (this.shouldDestroy)
+            {
+                Destroy(gameObject);
+            } else
+            {
+                InitSolution();
+            }
         }
     }
 
@@ -48,18 +57,22 @@ public class EquationController : MonoBehaviour
         return answer;
     }
 
-    public void HandleCorrect()
+    public void HandleCorrect(bool shouldDestroy = false)
     {
+        this.shouldDestroy = shouldDestroy;
         readyToSelectNewAnswer = true;
         GetComponent<RotationController>().StartRotating();
         GetComponent<ColorController>().SetColors(new Color[] {
             new Color(0, 1, 0),
             initialColor
         }, GameSettings.Instance.TransitionSpeed);
+
+        Instantiate(fireworks, transform.position, Quaternion.Euler(new Vector3(-90, 0, 0)));
     }
 
-    public void HandleIncorrect()
+    public void HandleIncorrect(bool shouldDestroy = false)
     {
+        this.shouldDestroy = shouldDestroy;
         GetComponent<ShakeController>().StartShaking();
         GetComponent<ColorController>().SetColors(new Color[] {
             new Color(1, 0, 0),
