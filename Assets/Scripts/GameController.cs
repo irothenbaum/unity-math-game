@@ -1,11 +1,44 @@
-﻿using System.Collections;
+﻿/*
+TODO:
+- Score
+    - Tallying points
+    - Displaying total score
+    - Displaying incremental score
+- Classic game mode
+    - {Scoring}
+- Estimation game mode
+    - {Scoring}
+    - Interface
+    - UI for equations
+    - Spawn logic
+- Frenzy game mode
+    - {Scoring}
+    - Spawn logic
+- Infinite game mode
+    - {Scoring}
+    - UI for equations
+    - Spawn logic
+- Settings
+    - UI
+    - Settings object mutations
+*/
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
     public static GameController Instance { get; private set; }
-    public GameObject equationPrefab;
+
+    public GameObject classicGame;
+
+    private string gameMode;
+    private ModeController modeController;
+
+    const string MODE_CLASSIC = "CLASSIC";
+    const string MODE_INFINITE = "INFINITE";
+    const string MODE_ESTIMATE = "ESTIMATE";
+    const string MODE_FRENZY = "FRENZY";
 
     void Awake()
     {
@@ -16,12 +49,11 @@ public class GameController : MonoBehaviour
         }
 
         Instance = this;
-        CreateNewEquation();
         GetBackgroundColorController().SetColor(RandomizeBackgroundColor());
+        ShowGameMenu();
     }
     void Update()
     {
-        // GameObject existing = GameObject.FindWithTag("Equation");
     }
 
     // ------------------------------------------------------------------------------------------------------
@@ -49,12 +81,87 @@ public class GameController : MonoBehaviour
     }
 
     // ------------------------------------------------------------------------------------------------------
-    // PRIVATE
+    // PRIVATE   
 
-    private void AddPoints(float basePoints, float multiplier = 1f)
+    private void HandleCorrect(EquationController equation)
     {
-
+        modeController.HandleCorrect(equation);
+        GetBackgroundColorController().SetColors(new Color[] {
+            GetBackgroundColorController().GetCurrentColor(),
+            RandomizeBackgroundColor()
+        }, GameSettings.Instance.TransitionSpeed);
     }
+
+    private void HandleIncorrect(EquationController equation)
+    {
+        modeController.HandleIncorrect(equation);
+        GetBackgroundColorController().SetColors(new Color[] {
+            new Color(1, 0, 0),
+            GetBackgroundColorController().GetCurrentColor()
+        }, GameSettings.Instance.TransitionSpeed);
+    }
+
+    private Color RandomizeBackgroundColor()
+    {
+        return GameSettings.Instance.BGColors[(int) Mathf.Floor(Random.Range(0, GameSettings.Instance.BGColors.Length))];
+    }
+
+    public void ShowGameMenu()
+    {
+        GetUserInputController().SlideOutOfView();
+        return;
+        GetGameMenuController().SlideIntoView();
+        GetSettingsMenuController().SlideOutOfView();
+    }
+
+    public void ShowSettingsMenu()
+    {
+        GetUserInputController().SlideOutOfView();
+        GetGameMenuController().SlideOutOfView();
+        GetSettingsMenuController().SlideIntoView();
+    }
+
+    public void EndGame()
+    {
+        if (this.modeController != null)
+        {
+            PlayResult results = this.modeController.EndGame();
+            Debug.Log(results);
+            // TODO: Show some summary screen?
+            ShowGameMenu();
+        }
+        this.gameMode = null;
+    }
+
+    public void StartGame(string mode)
+    {
+        Debug.Log("Stating game mode " + mode);
+
+        this.gameMode = mode;
+
+        switch(this.gameMode)
+        {
+            case MODE_CLASSIC:
+                // TODO: create the appropriate mode controller logic
+                this.modeController = classicGame.GetComponent<ClassicModeController>();
+                break;
+
+            default:
+                Debug.LogError("Invalid game mode " + mode);
+                this.modeController = null;
+                this.gameMode = null;
+                throw new System.NullReferenceException();
+        }
+
+        this.modeController.StartGame();
+
+        GetUserInputController().SlideIntoView();
+        GetGameMenuController().SlideOutOfView();
+        GetSettingsMenuController().SlideOutOfView();
+    }
+
+    // ----------------------------------------------------------------------------------------
+    // SIMPLE GETTERS
 
     private InputController GetUserInputController()
     {
@@ -62,38 +169,21 @@ public class GameController : MonoBehaviour
         return userAnswer.GetComponent<InputController>();
     }
 
+    private GameMenuController GetGameMenuController()
+    {
+        GameObject gameMenu = GameObject.FindGameObjectWithTag("GameMenu");
+        return gameMenu.GetComponent<GameMenuController>();
+    }
+
+    private SettingsMenuController GetSettingsMenuController()
+    {
+        GameObject userAnswer = GameObject.FindGameObjectWithTag("SettingsMenu");
+        return userAnswer.GetComponent<SettingsMenuController>();
+    }
+
     private ColorController GetBackgroundColorController()
     {
         GameObject background = GameObject.FindGameObjectWithTag("Background");
         return background.GetComponent<ColorController>();
-    }
-
-    private void HandleCorrect(EquationController equation)
-    {
-        equation.HandleCorrect();
-        GetBackgroundColorController().SetColors(new Color[] {
-            GetBackgroundColorController().GetCurrentColor(),
-            RandomizeBackgroundColor()
-        }, GameSettings.Instance.TransitionSpeed);
-        AddPoints(Mathf.Abs(equation.GetAnswer()));
-    }
-
-    private void HandleIncorrect(EquationController equation)
-    {
-        equation.HandleIncorrect();
-        GetBackgroundColorController().SetColors(new Color[] {
-            new Color(1, 0, 0),
-            GetBackgroundColorController().GetCurrentColor()
-        }, GameSettings.Instance.TransitionSpeed);
-    }
-
-    private void CreateNewEquation()
-    {
-        Instantiate(equationPrefab, transform.position, Quaternion.identity);
-    }
-
-    private Color RandomizeBackgroundColor()
-    {
-        return GameSettings.Instance.BGColors[(int) Mathf.Floor(Random.Range(0, GameSettings.Instance.BGColors.Length))];
     }
 }

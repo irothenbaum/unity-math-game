@@ -121,7 +121,14 @@ public class EquationController : MonoBehaviour
         }
 
         // Write the equation
-        display.text = constant1.ToString() + " + " + constant2.ToString();
+        if (constant2 >= 0)
+        {
+            display.text = constant1.ToString() + " + " + constant2.ToString();
+        }
+        else
+        {
+            display.text = constant1.ToString() + " - " + Mathf.Abs(constant2).ToString();
+        }
 
         // Set our box width accordingly
         float equationWidth = display.preferredWidth + padding;

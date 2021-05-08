@@ -3,7 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InputController : MonoBehaviour
+/*
+TODO:
+- Better Interface slide transitions
+    - currently only moving entire objects as one, would be cool to get dynamic down to the individual button / element
+ */
+
+public class InputController : MonoBehaviour, ISlideTransitionable
 {
     private ArrayList buffer;
     private Text display;
@@ -37,20 +43,21 @@ public class InputController : MonoBehaviour
         }
         else
         {
-            // if they first value they enter is a ., we prefix a 0
+            // if they first value they enter is a 0
             if (buffer.Count == 0 && value == "0")
             {
-                // you can't add a to nothing
+                // you can't add a 0 to nothing
                 return;
             }
 
+            // if they first value they enter is a .
             if (buffer.Count == 0 && value == ".")
             {
                 // add a 0 first, then add the value
                 buffer.Add("0");
             }
 
-            // Now add the value
+            // Now add the value they clicked
             buffer.Add(value);
 
         }
@@ -67,6 +74,16 @@ public class InputController : MonoBehaviour
     {
         buffer.Clear();
         UpdateDisplay();
+    }
+
+    public void SlideIntoView()
+    {
+        GetComponent<SlideController>().LerpToPosition(new Vector3(0, -50, 0), GameSettings.Instance.TransitionSpeed);
+    }
+
+    public void SlideOutOfView()
+    {
+        GetComponent<SlideController>().LerpToPosition(new Vector3(0, -300, 0), GameSettings.Instance.TransitionSpeed);
     }
 
     // ------------------------------------------------------------------------------------------------------

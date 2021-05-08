@@ -7,6 +7,8 @@ TagManager:
   - UserAnswer
   - Equation
   - Background
+  - GameMenu
+  - SettingsMenu
   layers:
   - Default
   - TransparentFX
