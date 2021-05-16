@@ -21,6 +21,9 @@ public class ClassicModeController : ModeController
 
     public override void StartGame()
     {
+        // construct our play result container
+        result = new PlayResult();
+
         // create new equation
         Instantiate(equationPrefab, transform.position, Quaternion.identity);
     }

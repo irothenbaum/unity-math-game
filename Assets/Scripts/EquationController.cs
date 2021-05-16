@@ -29,7 +29,8 @@ public class EquationController : MonoBehaviour
         Button btn = gameObject.GetComponentInChildren<Button>();
         btn.onClick.AddListener(HandleAnswer);
 
-        initialColor = GetComponent<ColorController>().GetCurrentColor();
+        initialColor = new Color(1f, 1f, 1f);
+        GetComponent<ColorController>().SetColor(initialColor);
     }
 
     private void Update()
@@ -131,13 +132,13 @@ public class EquationController : MonoBehaviour
         }
 
         // Set our box width accordingly
-        float equationWidth = display.preferredWidth + padding;
-        float meshScale = equationWidth / 100.0f; // 100 is the default/starting ratio between mesh scale and UI width
+        float equationWidth = display.preferredWidth;
+        // float meshScale = equationWidth * 0.5f; // 0.5f is the ratio between mesh scale and perceived UI width (now that canvas is in world space)
 
         RectTransform uiRect = btn.gameObject.GetComponent<RectTransform>();
-        uiRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, equationWidth);
-        uiRect.localScale = new Vector3(1 / meshScale, 2, 1);
-        gameObject.transform.localScale = new Vector3(meshScale, 0.5f, 0.5f);
+//        uiRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 200);
+//        uiRect.localScale = new Vector3(0.5f, 2, 1);
+        // gameObject.transform.localScale = new Vector3(meshScale, 25f, 25f);
     }
 
     private float RoundIfNeeded(float val)
