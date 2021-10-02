@@ -109,7 +109,6 @@ public class GameController : MonoBehaviour
     public void ShowGameMenu()
     {
         GetUserInputController().SlideOutOfView();
-        return;
         GetGameMenuController().SlideIntoView();
         GetSettingsMenuController().SlideOutOfView();
     }
@@ -177,8 +176,8 @@ public class GameController : MonoBehaviour
 
     private SettingsMenuController GetSettingsMenuController()
     {
-        GameObject userAnswer = GameObject.FindGameObjectWithTag("SettingsMenu");
-        return userAnswer.GetComponent<SettingsMenuController>();
+        GameObject settingsMenu = GameObject.FindGameObjectWithTag("SettingsMenu");
+        return settingsMenu.GetComponent<SettingsMenuController>();
     }
 
     private ColorController GetBackgroundColorController()

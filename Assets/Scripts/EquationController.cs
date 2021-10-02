@@ -15,6 +15,7 @@ public class EquationController : MonoBehaviour
     private Color initialColor;
     private bool shouldDestroy;
     private float padding = 40.0f;
+    private int numberOfGuesses = 0;
 
     public GameObject fireworks;
 
@@ -53,16 +54,30 @@ public class EquationController : MonoBehaviour
     // ------------------------------------------------------------------------------------------------------
     // PUBLIC
 
+    public float[] GetTerms()
+    {
+        return new float[] { this.constant1, this.constant2 };
+    }
+
     public float GetAnswer()
     {
         return answer;
     }
 
-    public void HandleCorrect(bool shouldDestroy = false)
+    public int GetNumberOfGuesses()
+    {
+        return numberOfGuesses;
+    }
+
+    public void SelectNewAnswer(bool shouldDestroy = false)
     {
         this.shouldDestroy = shouldDestroy;
         readyToSelectNewAnswer = true;
         GetComponent<RotationController>().StartRotating();
+    }
+
+    public void DisplayCorrect(bool shouldDestroy = false)
+    {
         GetComponent<ColorController>().SetColors(new Color[] {
             new Color(0, 1, 0),
             initialColor
@@ -71,9 +86,8 @@ public class EquationController : MonoBehaviour
         Instantiate(fireworks, transform.position, Quaternion.Euler(new Vector3(-90, 0, 0)));
     }
 
-    public void HandleIncorrect(bool shouldDestroy = false)
+    public void DisplayIncorrect(bool shouldDestroy = false)
     {
-        this.shouldDestroy = shouldDestroy;
         GetComponent<ShakeController>().StartShaking();
         GetComponent<ColorController>().SetColors(new Color[] {
             new Color(1, 0, 0),
@@ -136,9 +150,11 @@ public class EquationController : MonoBehaviour
         // float meshScale = equationWidth * 0.5f; // 0.5f is the ratio between mesh scale and perceived UI width (now that canvas is in world space)
 
         RectTransform uiRect = btn.gameObject.GetComponent<RectTransform>();
-//        uiRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 200);
-//        uiRect.localScale = new Vector3(0.5f, 2, 1);
+        //        uiRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 200);
+        //        uiRect.localScale = new Vector3(0.5f, 2, 1);
         // gameObject.transform.localScale = new Vector3(meshScale, 25f, 25f);
+
+        numberOfGuesses = 0;
     }
 
     private float RoundIfNeeded(float val)
@@ -150,6 +166,7 @@ public class EquationController : MonoBehaviour
 
     private void HandleAnswer()
     {
+        numberOfGuesses++;
         GameController.Instance.CheckAnswerToEquation(this);
     }
 
