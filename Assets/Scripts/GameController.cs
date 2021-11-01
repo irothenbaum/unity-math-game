@@ -1,9 +1,7 @@
 ﻿/*
 TODO:
 - Score
-    - Tallying points
     - Displaying total score
-    - Displaying incremental score
 - Classic game mode
     - {Scoring}
 - Estimation game mode
@@ -25,6 +23,7 @@ TODO:
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
@@ -108,26 +107,40 @@ public class GameController : MonoBehaviour
 
     public void ShowGameMenu()
     {
-        GetUserInputController().SlideOutOfView();
+        ClearHUD();
         GetGameMenuController().SlideIntoView();
+        GetUserInputController().SlideOutOfView();
+        GetGameScoreDrawer().SlideOutOfView();
         GetSettingsMenuController().SlideOutOfView();
     }
 
     public void ShowSettingsMenu()
     {
-        GetUserInputController().SlideOutOfView();
         GetGameMenuController().SlideOutOfView();
         GetSettingsMenuController().SlideIntoView();
+    }
+
+    public void ShowGameResults(PlayResult results)
+    {
+        ClearHUD();
+        GetUserInputController().SlideOutOfView();
+        GameScoreDrawer drawer = GetGameScoreDrawer();
+        drawer.RenderPlayResults(results);
+        drawer.SlideIntoView();
+    }
+
+    public void ClearHUD()
+    {
+        SetScoreText("");
     }
 
     public void EndGame()
     {
         if (this.modeController != null)
         {
-            PlayResult results = this.modeController.EndGame();
+            PlayResult results = this.modeController.GetPlayResult();
             Debug.Log(results);
-            // TODO: Show some summary screen?
-            ShowGameMenu();
+            ShowGameResults(results);
         }
         this.gameMode = null;
     }
@@ -153,10 +166,21 @@ public class GameController : MonoBehaviour
         }
 
         this.modeController.StartGame();
+        SetScoreText("0");
 
         GetUserInputController().SlideIntoView();
         GetGameMenuController().SlideOutOfView();
         GetSettingsMenuController().SlideOutOfView();
+    }
+
+    void OnGUI()
+    {
+        if (this.modeController == null || this.modeController.GetPlayResult() == null)
+        {
+            return;
+        }
+
+        SetScoreText("" + this.modeController.GetPlayResult().GetBaseScore());
     }
 
     // ----------------------------------------------------------------------------------------
@@ -184,5 +208,17 @@ public class GameController : MonoBehaviour
     {
         GameObject background = GameObject.FindGameObjectWithTag("Background");
         return background.GetComponent<ColorController>();
+    }
+
+    private GameScoreDrawer GetGameScoreDrawer()
+    {
+        GameObject gameScore = GameObject.FindGameObjectWithTag("GameResults");
+        return gameScore.GetComponent<GameScoreDrawer>();
+    }
+
+    private void SetScoreText(string score)
+    {
+        GameObject scoreHUD = GameObject.FindGameObjectWithTag("HUD_Score");
+        scoreHUD.GetComponent<Text>().text = score;
     }
 }

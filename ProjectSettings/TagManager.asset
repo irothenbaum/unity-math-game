@@ -9,6 +9,8 @@ TagManager:
   - Background
   - GameMenu
   - SettingsMenu
+  - HUD_Score
+  - GameResults
   layers:
   - Default
   - TransparentFX

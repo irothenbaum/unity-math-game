@@ -5,10 +5,21 @@ using UnityEngine;
 public class ClassicModeController : ModeController
 {
     public GameObject equationPrefab;
-    private int equationsLeft = 10;
-    private int guessesPerEquation = 3;
+    private int equationsLeft;
 
     private PlayResult result;
+    private GameObject equation;
+
+    private bool isGameOn = false;
+
+    public void Update()
+    {
+        if (this.isGameOn && this.equationsLeft == 0)
+        {
+
+            HandleEndGame();
+        }
+    }
 
     public override void HandleCorrect(EquationController equation)
     {
@@ -21,7 +32,7 @@ public class ClassicModeController : ModeController
     public override void HandleIncorrect(EquationController equation)
     {
         // This is their guess if the've guessed the max number of times allowed
-        bool noMoreGuessesLeft = equation.GetNumberOfGuesses() == this.guessesPerEquation;
+        bool noMoreGuessesLeft = equation.GetNumberOfGuesses() == GameSettings.Instance.ClassicMode_Guesses;
 
         // we destroy this equation if it's their last guess
         equation.DisplayIncorrect(noMoreGuessesLeft);
@@ -36,25 +47,25 @@ public class ClassicModeController : ModeController
 
     public override void StartGame()
     {
+        this.isGameOn = true;
+        this.equationsLeft = GameSettings.Instance.ClassicMode_Questions;
+
         // construct our play result container
         result = new PlayResult();
 
         // create new equation
-        Instantiate(equationPrefab, transform.position, Quaternion.identity);
+        this.equation = Instantiate(equationPrefab, transform.position, Quaternion.identity);
     }
 
-    public override PlayResult EndGame()
+    public void HandleEndGame()
+    {
+        GameController.Instance.EndGame();
+        Destroy(this.equation);
+        this.isGameOn = false;
+    }
+
+    public override PlayResult GetPlayResult()
     {
         return result;
-    }
-
-    void OnGUI()
-    {
-        string score = "";
-        if (result != null)
-        {
-            score = "" + result.GetBaseScore();
-        }
-        GUI.Label(new Rect(10, 10, 100, 20), score);
     }
 }

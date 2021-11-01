@@ -33,4 +33,9 @@ public class PlayResult
 
         return (int) Mathf.Ceil(score);
     }
+
+    public EquationResult[] GetAnsweredQuestions()
+    {
+        return (EquationResult[]) equationsArray.ToArray();
+    }
 }

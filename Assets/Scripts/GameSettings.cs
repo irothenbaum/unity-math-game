@@ -14,4 +14,6 @@ public class GameSettings : Singleton<GameSettings> {
         new Color(0.48f, 0.18f, 0.17f),
     };
     public float TransitionSpeed = 0.5f;
+    public int ClassicMode_Questions = 5;
+    public int ClassicMode_Guesses = 3;
 }
